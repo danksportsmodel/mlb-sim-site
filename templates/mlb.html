@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MLB Game Simulator</title>
+    <style>
+        body { background: #0d1117; color: #fff; font-family: sans-serif; padding: 30px; }
+        h1 { color: #00e676; }
+        form, .result, .games, .desc { background: #161b22; padding: 20px; margin-top: 20px; border-radius: 10px; }
+        input, select, button {
+            padding: 10px; margin: 5px 0;
+            border: none; border-radius: 6px;
+            font-size: 16px; width: 100%;
+        }
+        button { background: #00e676; color: black; font-weight: bold; cursor: pointer; }
+        .result p, .desc p, .games p { margin: 5px 0; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+    </style>
+</head>
+<body>
+    <h1>DANK MLB SIMULATOR</h1>
+
+    <div class="grid">
+        <div>
+            <form method="POST" action="/simulate">
+                <label>Team A:</label>
+                <input type="text" name="team_a" placeholder="e.g. Yankees" required>
+                <label>Team B:</label>
+                <input type="text" name="team_b" placeholder="e.g. Mets" required>
+                <label>Simulation Type:</label>
+                <select name="prop" required>
+                    <option value="">-- Select Sim Type --</option>
+                    <option value="ml">Moneyline (Winner)</option>
+                    <option value="ou">Over/Under (Total Runs)</option>
+                    <option value="first">First Inning (Y/N)</option>
+                    <option value="hr">Home Runs</option>
+                    <option value="tb">2+ Total Bases</option>
+                    <option value="k">Strikeouts</option>
+                </select>
+                <button type="submit">Simulate</button>
+            </form>
+
+            {% if result %}
+            <div class="result">
+                <h3>Sim Result: {{ result['type'] }}</h3>
+                {% for key, value in result.items() if key != 'type' %}
+                    <p><strong>{{ key.capitalize() }}:</strong> {{ value }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div>
+            <div class="desc">
+                <h3>What Each Sim Does:</h3>
+                <p><strong>Moneyline:</strong> Predicts the winning team.</p>
+                <p><strong>Over/Under:</strong> Predicts game total run line.</p>
+                <p><strong>First Inning:</strong> Will there be a run scored?</p>
+                <p><strong>Home Runs:</strong> Who goes yard based on matchup.</p>
+                <p><strong>2+ Total Bases:</strong> Predicts hitters with 2+ bases.</p>
+                <p><strong>Strikeouts:</strong> Projected K’s for SP.</p>
+            </div>
+
+            <div class="games">
+                <h3>Today's Matchups & Weather:</h3>
+                {% for game in games %}
+                    <p>⚾ {{ game.team_a }} vs {{ game.team_b }} — {{ game.time }}</p>
+                    <p>🌤 {{ game.weather }}</p>
+                    <hr>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
